@@ -22,12 +22,27 @@
          url('/fonts/jost/jost-v2-latin_cyrillic-300italic.ttf') format('truetype'), /* Safari, Android, iOS */
          url('/fonts/jost/jost-v2-latin_cyrillic-300italic.svg#Jost') format('svg'); /* Legacy iOS */
   }
+@font-face {
+    font-family: 'Jost';
+    font-style: normal;
+    font-weight: 500;
+    src: url('/fonts/jost/jost-v2-latin_cyrillic-500.eot'); /* IE9 Compat Modes */
+    src: local(''),
+         url('/fonts/jost/jost-v2-latin_cyrillic-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('/fonts/jost/jost-v2-latin_cyrillic-500.woff2') format('woff2'), /* Super Modern Browsers */
+         url('/fonts/jost/jost-v2-latin_cyrillic-500.woff') format('woff'), /* Modern Browsers */
+         url('/fonts/jost/jost-v2-latin_cyrillic-500.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('/fonts/jost/jost-v2-latin_cyrillic-500.svg#Jost') format('svg'); /* Legacy iOS */
+}
 * {
     padding: 0;
     margin: 0;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+}
+body {
     font-family: Jost, sans-serif;
+    font-weight: 300;
 }
 ul {
     list-style: none;
@@ -38,6 +53,15 @@ a {
 }
 a:hover {
     color: #871f45;
+}
+.bg-white {
+    background-color: #fff;
+}
+.shadowed {
+    filter: progid:DXImageTransform.Microsoft.shadow(direction=0, color=#808080, strength=5);
+    -webkit-box-shadow: 0px 0px 5px 1px #808080;
+    -moz-box-shadow: 0px 0px 5px 1px #808080;
+    box-shadow: 0px 0px 5px 1px #808080;
 }
 
 .page-body {
@@ -54,7 +78,9 @@ a:hover {
 .links-list__link,
 .header__middle-block,
 .main-menu,
-.main-menu__link {
+.main-menu__link,
+.news-list,
+.columned-container {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -62,13 +88,16 @@ a:hover {
 .header__top-block,
 .links-list__link,
 .main-menu,
-.main-menu__link {
+.main-menu__link,
+.news-list {
     -webkit-box-align: stretch;
     -ms-flex-align: stretch;
     align-items: stretch;
 }
 .header__top-block,
-.header__middle-block {
+.header__middle-block,
+.news-list,
+.columned-container {
     -webkit-box-pack: justify;
     -ms-flex-pack: justify;
     justify-content: space-between;
@@ -92,11 +121,10 @@ a:hover {
     align-self: center;
 }
 
-.page_container {
+.page-container {
     min-height: 100px;
     margin: 20px auto;
     border: 0px solid #000;
-    box-shadow: 0px 0px 5px 1px #808080;
 }
 
 .header__top-block {
@@ -125,9 +153,15 @@ a:hover {
 }
 .banner {
     border: 1px solid #000;
+    background: #fff;
 }
 .banner__horizontal {
     width: 720px;
+}
+.banner__middle {
+    width: 1049px;
+    height: 110px;
+    margin: 0 auto;
 }
 
 .size-preview {
@@ -159,10 +193,167 @@ a:hover {
 }
 
 
+.section-header {
+    position: relative;
+}
+.section-header__title {
+    display: inline-block;
+    position: relative;
+    padding: 5px 15px;
+    font-size: 0.95em;
+    letter-spacing: 0.1em;
+}
+.section-header__title::after {
+    position: absolute;
+    top: 0;
+    right: -1.5em;
+    border-top: 32px solid transparent;
+    content: '';
+}
+.section-header__underline {
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    bottom: 0;
+}
+.section-header__light-green .section-header__title {
+    color: #fff;
+    background-color: #8da800;
+}
+.section-header__light-green > .section-header__title::after {
+    border-left: 1.5em solid #8da800;
+}
+.section-header__light-green > .section-header__underline {
+    background-color: #8da800;
+}
+
+.section-header__green .section-header__title {
+    color: #fff;
+    background-color: #008d2b;
+}
+.section-header__green > .section-header__title::after {
+    border-left: 1.5em solid #008d2b;
+}
+.section-header__green > .section-header__underline {
+    background-color: #008d2b;
+}
+
+.section-header__red .section-header__title {
+    color: #fff;
+    background-color: #dd392c;
+}
+.section-header__red > .section-header__title::after {
+    border-left: 1.5em solid #dd392c;
+}
+.section-header__red > .section-header__underline {
+    background-color: #dd392c;
+}
+.section-content {
+    min-height: 20px;
+}
+
+.section-header__yellow .section-header__title {
+    color: #000;
+    background-color: #fdbf26;
+}
+.section-header__yellow > .section-header__title::after {
+    border-left: 1.5em solid #fdbf26;
+}
+.section-header__yellow > .section-header__underline {
+    background-color: #fdbf26;
+}
+.section-content {
+    min-height: 20px;
+}
+
+
+.news-list {
+    padding: 10px 20px;
+}
+.news-list__item {
+    width: 275px;
+}
+.news-list__item__link {
+    display: block;
+    height: 100%;
+}
+.news-list__item__link:hover {
+    color: inherit;
+}
+.news-list__item__logo {
+    line-height: 0;
+}
+.news-list__item__logo__image {
+    width: 100%;
+}
+.news-list__item__meta {
+    padding: 5px 15px;
+    font-size: 0.75em;
+    font-weight: 300;
+}
+.news-list__item__title {
+    padding: 0 10px 10px;
+    font-weight: 400;
+    line-height: 1.2em;
+}
+.meta__dislikes,
+.meta__comments {
+    margin-left: 10px;
+}
+.column__left {
+    width: calc(66.6% - 10px);
+}
+.column__right {
+    width: calc(33.3% - 10px);
+}
+.column-block {
+    margin-bottom: 20px;
+}
+
+.talks-list {
+    padding: 10px;
+}
+.talks-list__item {
+    border-bottom: 1px solid rgba(14, 14, 14, 0.12);
+    padding: 10px 10px 15px;
+}
+.talks-list__item:nth-child(1) .talks-list__item__title {
+    filter: Shadow(Color=#d3de9d, Direction=45, Strength=11);
+    text-shadow: 0px 0px 11px #d3de9d;
+}
+.talks-list__item:nth-child(2) .talks-list__item__title {
+    filter: Shadow(Color=#9dd4ae, Direction=45, Strength=11);
+    text-shadow: 0px 0px 11px #9dd4ae;
+}
+.talks-list__item:nth-child(3) .talks-list__item__title {
+    filter: Shadow(Color=#f2b3ad, Direction=45, Strength=11);
+    text-shadow: 0px 0px 11px #f2b3ad;
+}
+.talks-list__item:last-child {
+    border-bottom: none;
+}
+.talks-list__item__title {
+    margin-bottom: 5px;
+    font-size: 1em;
+}
+.talks-list__item__content {
+    margin: 3px 0;
+    font-size: 0.9em;
+}
+.talks-list__item__meta,
+.talks-list__item__reactions {
+    font-size: 0.8em;
+}
+
+.copyright {
+    padding: 15px 0;
+    color: #fff;
+    text-align: center;
+    background-color: #000;
+}
 
 @media screen and (min-width: 1200px) {
-    .page_container {
+    .page-container {
         width: 1170px;
-        background-color: #fff;
     }
 }
