@@ -1,13 +1,14 @@
 from .base import *
+from .pg_local_settings import NAME, HOST, PORT, TEMPLATE, USER, PASSWORD
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bunin_meadows',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-        'TEMPLATE': 'template0'
+        'NAME': NAME,
+        'USER': USER,
+        'PASSWORD': PASSWORD,
+        'HOST': HOST,
+        'PORT': PORT,
+        'TEMPLATE': TEMPLATE
     }
 }
