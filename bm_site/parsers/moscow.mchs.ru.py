@@ -9,6 +9,8 @@ from django.db import IntegrityError
 
 
 class EmergencyWarningsParser(Parser):
+    """ Парсер штормовых и экстренных предупреждений МЧС г. Москвы  """
+
     logger = logging.getLogger('moscow.mchs.ru')
     URL = 'https://moscow.mchs.ru/deyatelnost/press-centr/operativnaya-informaciya/' \
           'shtormovye-i-ekstrennye-preduprezhdeniya/rss'
