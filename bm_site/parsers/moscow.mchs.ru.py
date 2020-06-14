@@ -4,7 +4,8 @@ import pytz
 import re
 import requests
 from bs4 import BeautifulSoup, Tag
-from parser import Parser
+from parsers.parser import Parser
+from django.db import IntegrityError
 
 
 class EmergencyWarningsParser(Parser):
@@ -25,6 +26,8 @@ class EmergencyWarningsParser(Parser):
 
     def parse(self):
         assert isinstance(self.bs_response, BeautifulSoup)
+        added = 0
+        duplicates = 0
         for item in self.bs_response.select('item'):
             record_data = {}
             for tag in item.children:
@@ -41,9 +44,16 @@ class EmergencyWarningsParser(Parser):
                     record_data['enc_link'] = tag.attrs.get('url')
                     record_data['enc_length'] = tag.attrs.get('length')
                     record_data['enc_type'] = tag.attrs.get('type')
-            record = self.db_model(**record_data)
-            record.save()
-        self.logger.info('Parsing completed.\n')
+            try:
+                record = self.db_model(**record_data)
+                record.save()
+                added += 1
+            except IntegrityError as exc:
+                if 'duplicate key value' in exc.args[0]:
+                    duplicates += 1
+                else:
+                    self.logger.error(f'Save error: {exc.args[0]}')
+        self.logger.info(f'Parsing completed. Added {added} new records, {duplicates} skipped due to duplication.\n')
 
 
 if __name__ == '__main__':
@@ -58,41 +68,3 @@ if __name__ == '__main__':
         parser.parse()
     else:
         parser.logger.info('Parsing is finished with errors.\n')
-
-
-
-
-
-
-# RSS_URL = 'https://moscow.mchs.ru/deyatelnost/press-centr/operativnaya-informaciya/shtormovye-i-ekstrennye-preduprezhdeniya/rss1'
-# re_link = re.compile(pattern=r'<(\/)?(link)>', flags=re.IGNORECASE)
-#
-# session = requests.Session()
-# # session.headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) '
-# #                                  'Chrome/79.0.3945.117 YaBrowser/20.2.0.1043 Yowser/2.5 Safari/537.36',
-# #                    'accept-language': 'ru,en;q=0.9',
-# #                    }
-# try:
-#     response = session.get(url=RSS_URL)
-#     if response.status_code == 200:
-#         cleaned_text = re.sub(pattern=re_link, repl=r'<\1source_\2>', string=response.text)
-#         bs = BeautifulSoup(cleaned_text, features='lxml')
-#         record = {}
-#         for item in bs.select('item'):
-#             for tag in item.children:
-#                 if not isinstance(tag, Tag):
-#                     continue
-#                 if tag.name in ('title', 'source_link', 'yandex:full-text'):
-#                     record[tag.name] = tag.text.strip()
-#                 elif tag.name == 'pubdate':
-#                     record['pub_date'] = datetime.datetime.strptime(tag.text, '%a, %d %b %Y %H:%M:%S MSK')
-#                 elif tag.name == 'enclosure':
-#                     record['enc_link'] = tag.attrs.get('url')
-#                     record['enc_length'] = tag.attrs.get('length')
-#                     record['enc_type'] = tag.attrs.get('type')
-#             break
-#         pprint(record)
-#     else:
-#         response.raise_for_status()
-# except Exception as exc:
-#     print(exc.args[0])
