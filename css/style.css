@@ -80,7 +80,9 @@ a:hover {
 .main-menu,
 .main-menu__link,
 .news-list,
-.columned-container {
+.columned-container,
+.currency-list,
+.currency-list__item  {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -151,6 +153,32 @@ a:hover {
 .logo {
     font-size: 0;
 }
+
+.currency-list {
+    margin-left: 20px;
+}
+.currency-list__item {
+    padding: 10px 0;
+    margin-right: 20px;
+    cursor: pointer;
+}
+.currency__logo {
+    width: 20px;
+    margin-right: 10px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+.currency__logo__dollar {
+    background-image: url(../images/money/dollar_4229510.svg);
+}
+.currency__logo__euro {
+    background-image: url(../images/money/euro_4229514.svg);
+}
+.currency__volatility {
+    margin-left: 10px;
+    color: #cec1c1;
+}
+
 .banner {
     border: 1px solid #000;
     background: #fff;
