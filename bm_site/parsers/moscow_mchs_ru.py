@@ -5,7 +5,6 @@ import re
 import requests
 from bs4 import BeautifulSoup, Tag
 from parsers.parser import Parser
-from django.db import IntegrityError
 
 
 class EmergencyWarningsParser(Parser):
@@ -28,8 +27,6 @@ class EmergencyWarningsParser(Parser):
 
     def parse(self):
         assert isinstance(self.bs_response, BeautifulSoup)
-        added = 0
-        duplicates = 0
         for item in self.bs_response.select('item'):
             record_data = {}
             for tag in item.children:
@@ -46,13 +43,6 @@ class EmergencyWarningsParser(Parser):
                     record_data['enc_link'] = tag.attrs.get('url')
                     record_data['enc_length'] = tag.attrs.get('length')
                     record_data['enc_type'] = tag.attrs.get('type')
-            try:
-                record = self.db_model(**record_data)
-                record.save()
-                added += 1
-            except IntegrityError as exc:
-                if 'duplicate key value' in exc.args[0]:
-                    duplicates += 1
-                else:
-                    self.logger.error(f'Save error: {exc.args[0]}')
-        self.logger.info(f'Parsing completed. Added {added} new records, {duplicates} skipped due to duplication.\n')
+            self._save_data(record_data=record_data)
+        log_str = 'Parsing completed. Added {} new records, {} skipped due to duplication.\n'
+        self.logger.info(log_str.format(self.save_results['added'], self.save_results['duplicates']))

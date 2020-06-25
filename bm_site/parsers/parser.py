@@ -1,6 +1,8 @@
 import logging.config
 import requests
 from bs4 import BeautifulSoup
+from django.db import IntegrityError
+
 from conf import LOG_CONFIG
 
 
@@ -24,6 +26,11 @@ class Parser:
         self.response = None
         self.bs_response = None
         self.json_response = None
+        self.save_results = {
+            'added': 0,
+            'duplicates': 0,
+            'other_errors': 0,
+        }
 
     def _request(self, url, features=None, is_json=False):
         """
@@ -52,6 +59,28 @@ class Parser:
         except Exception as exc:
             self.logger.error(exc.args[0])
             return False
+
+    def _save_data(self, record_data):
+        """
+        Сохранить строку в БД. Результат сохранения записываются в словарь-счетчик результатов self.save_results,
+        текст ошибок также записывается в лог.
+
+        :param dict record_data: Данные для записи в БД. Ключами должны быть имена полей БД,
+        значениями - данные для вставки.
+        """
+        try:
+            record = self.db_model(**record_data)
+            record.save()
+            self.save_results['added'] += 1
+        except IntegrityError as exc:
+            if 'duplicate key value' in exc.args[0]:
+                self.save_results['duplicates'] += 1
+            else:
+                self.logger.error(f'Save error: {exc.args[0]}')
+                self.save_results['other_errors'] += 1
+        except Exception as exc:
+            self.logger.error(f'Save error: {exc.args[0]}')
+            self.save_results['other_errors'] += 1
 
     def request_xml(self):
         """
