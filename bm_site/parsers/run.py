@@ -8,8 +8,16 @@ if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bm_site.settings.dev')
     django.setup()
 
-    parser = CurrencyParser()
-    if parser.request_json():
-        parser.parse()
-    else:
-        parser.logger.info('Parsing is finished with errors.\n')
+    for json_parser in [CurrencyParser]:
+        parser = json_parser()
+        if parser.request_json():
+            parser.parse()
+        else:
+            parser.logger.info('Parsing is finished with errors.\n')
+
+    for xml_parser in [EmergencyWarningsParser]:
+        parser = xml_parser()
+        if parser.request_xml():
+            parser.parse()
+        else:
+            parser.logger.info('Parsing is finished with errors.\n')
