@@ -1,22 +1,25 @@
 from django.db import models
+from django.utils import timezone
+
 from .app_settings import DB_PREFIX
 
 
 class ExchangeRates(models.Model):
     """ Волатильность курса валют (Доллар США, Евро) """
-    dollar_rate = models.FloatField(verbose_name='Курс Доллара')
-    dollar_volatility = models.FloatField(verbose_name='Изменение курса Доллара')
-    euro_rate = models.FloatField(verbose_name='Курс Евро')
-    euro_volatility = models.FloatField(verbose_name='Изменение курса Евро')
-    relevance = models.DateTimeField(auto_now_add=True, verbose_name='Актуальность', primary_key=True)
+    currency = models.CharField(max_length=3, default='', verbose_name='Валюта')
+    rate = models.FloatField(default=0, verbose_name='Курс валюты')
+    rate_volatility = models.FloatField(default=0, verbose_name='Изменение курса')
+    rate_date = models.DateField(default=timezone.now, verbose_name='Дата курса')
+    imported_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время импорта')
 
     def __str__(self):
-        return f'{self.relevance.strftime("%Y-%m-%d %H:%M")} - \u0024 {self.dollar_rate}, \u20AC {self.euro_rate}'
+        return f'{self.currency} - {self.rate}'
 
     class Meta:
         db_table = f'{DB_PREFIX}_exchange_rate'
-        ordering = ['-relevance']
+        ordering = ['-rate_date', 'currency', '-imported_at']
         verbose_name = 'Курсы валют'
+        unique_together = ['currency', 'rate', 'rate_date']
 
 
 class EmergencyWarnings(models.Model):
@@ -29,6 +32,7 @@ class EmergencyWarnings(models.Model):
     enc_link = models.CharField(max_length=2000, null=True, verbose_name='Ссылка на вложение')
     enc_length = models.IntegerField(default=0, verbose_name='Размер вложения')
     enc_type = models.CharField(max_length=50, null=True, verbose_name='Тип вложение')
+    imported_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время импорта')
 
     def __str__(self):
         return f'{self.pub_date.strftime("%Y-%m-%d %H:%M")} - {self.title}'
@@ -36,4 +40,4 @@ class EmergencyWarnings(models.Model):
     class Meta:
         db_table = f'{DB_PREFIX}_emergency_warnings'
         ordering = ['-pub_date']
-        verbose_name = 'Предупреждения МЧС'
+        verbose_name = 'Предупреждения МЧС г.Москвы'
