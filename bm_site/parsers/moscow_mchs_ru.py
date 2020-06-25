@@ -56,17 +56,3 @@ class EmergencyWarningsParser(Parser):
                 else:
                     self.logger.error(f'Save error: {exc.args[0]}')
         self.logger.info(f'Parsing completed. Added {added} new records, {duplicates} skipped due to duplication.\n')
-
-
-if __name__ == '__main__':
-    import os
-    import django
-
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bm_site.settings.dev')
-    django.setup()
-
-    parser = EmergencyWarningsParser()
-    if parser.request_xml():
-        parser.parse()
-    else:
-        parser.logger.info('Parsing is finished with errors.\n')

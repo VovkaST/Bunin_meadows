@@ -23,15 +23,17 @@ class Parser:
         self.session.headers = Parser.DEFAULT_HEADERS
         self.response = None
         self.bs_response = None
+        self.json_response = None
 
-    def _request(self, url, features):
+    def _request(self, url, features=None, is_json=False):
         """
-        Метод отправляет запрос к источнику и преобразует ответ в объект BeautifulSoup4, присваивая его
-        атрибуту self.bs_response. Чистый ответ хранится в атрибуте self.response. Факт сетевой активности
-        записывается в лог self.logger (по умолчанию используется handler_parser).
+        Метод отправляет запрос к источнику и преобразует ответ в объект BeautifulSoup4 или json, в зависимости
+        от параметра is_json, присваивая его атрибуту self.bs_response. Чистый ответ хранится в атрибуте self.response.
+        Факт сетевой активности записывается в лог self.logger (по умолчанию используется handler_parser).
 
         :param url: Адрес источника данных
-        :param features: Используемый парсер
+        :param str features: Используемый парсер (не используется, если is_json == True)
+        :param boolean is_json: Вернуть данные в json
         :return Boolean: Успешность выполнения запроса к источнику данных
         """
         try:
@@ -40,8 +42,12 @@ class Parser:
             self.logger.info('Response received.')
             if self.response.status_code != 200:
                 self.response.raise_for_status()
-            self.clean_html()
-            self.bs_response = BeautifulSoup(self.response, features=features)
+            if is_json:
+                self.json_response = self.response.json()
+            else:
+                assert features in ('lxml', 'html.parser')
+                self.clean_html()
+                self.bs_response = BeautifulSoup(self.response, features=features)
             return True
         except Exception as exc:
             self.logger.error(exc.args[0])
@@ -63,6 +69,15 @@ class Parser:
         """
 
         return self._request(url=self.URL, features='html.parser')
+
+    def request_json(self):
+        """
+        Получение данных в виде json.
+
+        :return Boolean: Успешность выполнения запроса к источнику данных
+        """
+
+        return self._request(url=self.URL, is_json=True)
 
     def clean_html(self):
         """ Метод для предварительной обработки полученных от источника данных (при необходимости) """
