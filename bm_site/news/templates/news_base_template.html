@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Жилой квартал "Бунинские луга"</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'images/favicon/site.webmanifest' %}">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/fa/css/all.min.css' %}">
+</head>
+<body class="page-body">
+<header class="page-container bg-white shadowed">
+    <div class="header__top-block">
+        <div class="date">
+            <i class="date__icon far fa-calendar-check"></i>
+            <span class="date__date">{% now 'j E Y' %} г., {% now 'l' %}</span>
+        </div>
+        <ul class="links-list">
+            <li class="links-list__item">
+                <a href="#" class="links-list__link"><span class="links-list__link__name">ВКонтакте</span></a>
+            </li>
+            <li class="links-list__item">
+                <a href="#" class="links-list__link"><span class="links-list__link__name">Instagram</span></a>
+            </li>
+            <li class="links-list__item">
+                <a href="#" class="links-list__link"><span class="links-list__link__name">Telegram</span></a>
+            </li>
+        </ul>
+    </div>
+    <div class="header__middle-block">
+        <div class="logo">
+            <a href="#"><img src="{% static 'images/main-logo.png' %}" alt="Бунинские луга наш людимый микрорайон"></a>
+        </div>
+        <div class="banner banner__horizontal banner__top size-preview">
+            <a href="#" target="_blank" class="banner__link">720 x 90</a>
+        </div>
+    </div>
+    <nav>
+        <ul class="main-menu">
+            <li class="main-menu__item">
+                <a href="#" class="main-menu__link"><span class="main-menu__link__name">ГЛАВНАЯ</span></a>
+            </li>
+            <li class="main-menu__item">
+                <a href="#" class="main-menu__link"><span class="main-menu__link__name">НОВОСТИ</span></a>
+            </li>
+            <li class="main-menu__item">
+                <a href="#" class="main-menu__link"><span class="main-menu__link__name">ОБЪЯВЛЕНИЯ</span></a>
+            </li>
+            <li class="main-menu__item">
+                <a href="#" class="main-menu__link"><span class="main-menu__link__name">ПОЛЕЗНОСТИ</span></a>
+            </li>
+        </ul>
+    </nav>
+    <div class="header__bottom-block">
+        <div class="currency">
+            <ul class="currency-list">
+                <li class="currency-list__item" title="Курс ЦБ РФ на {{ dollar.rate_date|date:'d/m' }}">
+                    <span class="currency__logo currency__logo__dollar"></span>
+                    <span class="currency__value">{{ dollar.rate }}</span>
+                    <span class="currency__volatility">{{ dollar.rate_volatility|stringformat:'+.2f' }}</span>
+                </li>
+                <li class="currency-list__item" title="Курс ЦБ РФ на {{ euro.rate_date|date:'d/m' }}">
+                    <span class="currency__logo currency__logo__euro"></span>
+                    <span class="currency__value">{{ euro.rate }}</span>
+                    <span class="currency__volatility">{{ euro.rate_volatility|stringformat:'+.2f' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+{% if emergency.count %}
+    <section class="emergency_warninigs">
+        {% for warninig in emergency %}
+            <a href="{{ warninig.source_link }}" target="_blank" class="source-link">
+                <div class="bg-white shadowed emergency_warninigs__item">
+                    <h3 class="emergency_warninigs__item__header">ГУ МЧС России по г. Москве информирует</h3>
+                    <div class="emergency_warninigs__item__title">
+                        {{ warninig.pub_date|date:'d E Y' }} г.: {{ warninig.title }}
+                    </div>
+{#                <div class="emergency_warninigs__item__text">#}
+{#                    {{ warninig.full_text|safe }}#}
+{#                </div>#}
+                </div>
+            </a>
+        {% endfor %}
+    </section>
+{% endif %}
+
+{% block content %}
+
+{% endblock %}
+<div class="copyright">{% now 'Y' %}, Сунцов Владимир &copy; Все права защищены</div>
+</body>
+</html>
