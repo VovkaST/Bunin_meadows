@@ -4,6 +4,8 @@ import pytz
 import re
 import requests
 from bs4 import BeautifulSoup, Tag
+
+from bm_site.exceptions import DuplicateKeyError
 from parsers.parser import Parser
 
 
@@ -43,6 +45,9 @@ class EmergencyWarningsParser(Parser):
                     record_data['enc_link'] = tag.attrs.get('url')
                     record_data['enc_length'] = tag.attrs.get('length')
                     record_data['enc_type'] = tag.attrs.get('type')
-            self._save_data(record_data=record_data)
+            try:
+                self.insert_record(record_data=record_data)
+            except DuplicateKeyError:
+                pass
         log_str = 'Parsing completed. Added {} new records, {} skipped due to duplication.\n'
         self.logger.info(log_str.format(self.save_results['added'], self.save_results['duplicates']))

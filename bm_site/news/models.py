@@ -1,3 +1,4 @@
+from django.contrib.postgres.forms import JSONField
 from django.db import models
 from django.utils import timezone
 
@@ -41,3 +42,20 @@ class EmergencyWarnings(models.Model):
         db_table = f'{DB_PREFIX}_emergency_warnings'
         ordering = ['-pub_date']
         verbose_name = 'Предупреждения МЧС г.Москвы'
+
+
+class News(models.Model):
+    source = models.CharField(max_length=100, default='', verbose_name='Источник')
+    dirty_data = JSONField()
+    title = models.CharField(max_length=1000, verbose_name='Заголовок')
+    image = models.CharField(max_length=1000, verbose_name='Ссылка на заглавное изображение')
+    url = models.CharField(max_length=1000, verbose_name='Ссылка на источник')
+    created_at = models.DateTimeField(verbose_name='Дата и время создания на источнике')
+    last_modified = models.DateTimeField(verbose_name='Дата и время изменения на источнике')
+    imported_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время импорта')
+    views = models.BigIntegerField(default=0, verbose_name='Количество просмотров')
+
+    class Meta:
+        db_table = f'{DB_PREFIX}_news'
+        verbose_name = 'Новости'
+

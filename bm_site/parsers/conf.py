@@ -31,6 +31,12 @@ LOG_CONFIG = {
             'filename': os.path.join(PARSERS_LOG_DIR, 'iss.moex.com.log'),
             'encoding': 'UTF-8'
         },
+        'handler_mos.ru': {
+            'class': 'logging.FileHandler',
+            'formatter': 'parsing_log',
+            'filename': os.path.join(PARSERS_LOG_DIR, 'mos.ru.log'),
+            'encoding': 'UTF-8'
+        },
         # 'handler_errors': {
         #     'class': 'logging.FileHandler',
         #     'formatter': 'request_log',
@@ -50,6 +56,10 @@ LOG_CONFIG = {
         },
         'iss.moex.com': {
             'handlers': ['handler_iss.moex.com'],
+            'level': 'INFO',
+        },
+        'mos.ru': {
+            'handlers': ['handler_mos.ru'],
             'level': 'INFO',
         },
         # 'level_critical': {
