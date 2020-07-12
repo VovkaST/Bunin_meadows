@@ -130,4 +130,8 @@ STATICFILES_DIRS = [
     ('js', STATIC_ROOT / 'js'),
     ('newsfeed', NEWSFEED_ROOT),
 ]
+
+MAIN_NEWS_LINE_LENGTH = 4  # Количество главных новостей в ленте на главной странице
+LOCALS_PER_PAGE = 3  # Количество записей с Яндекс.Района на главной странице (максимум 10)
+
 STATIC_URL = '/static/'

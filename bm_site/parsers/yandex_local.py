@@ -18,7 +18,7 @@ class YandexLocalParser(Parser):
         assert isinstance(self.json_response, dict)
         try:
             cache = self.db_model.objects.get(source=self.source)
-            self.update_record(record=cache, record_data=self.json_response)
+            self.update_record(record=cache, record_data={'dirty_data': self.json_response})
         except ObjectDoesNotExist:
             record_data = {
                 'source': self.source,

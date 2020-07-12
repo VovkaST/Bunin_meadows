@@ -29,5 +29,5 @@ function collectRates() {
 }
 
 $(function() {
-    alert('Welcome!');
+    // alert('Welcome!');
 });
