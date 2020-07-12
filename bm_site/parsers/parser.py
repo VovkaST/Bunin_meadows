@@ -1,4 +1,9 @@
 import logging.config
+import pathlib
+from datetime import datetime
+from io import BytesIO
+
+import pytz
 import requests
 from bs4 import BeautifulSoup
 from django.db import IntegrityError
@@ -12,6 +17,7 @@ class Parser:
     Базовый класс парсера различных данных для сайта. Использует BeautifulSoup4.
     """
 
+    DEFAULT_TIME_ZONE = 'Europe/Moscow'
     DEFAULT_HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) '
                                      'Chrome/79.0.3945.117 YaBrowser/20.2.0.1043 Yowser/2.5 Safari/537.36',
                        'accept-language': 'ru,en;q=0.9',
@@ -24,7 +30,7 @@ class Parser:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers = Parser.DEFAULT_HEADERS
-        self.data = dict()
+        self.request_data = dict()
         self.response = None
         self.bs_response = None
         self.json_response = None
@@ -34,6 +40,12 @@ class Parser:
             'duplicates': 0,
             'other_errors': 0,
         }
+
+    @property
+    def content_length(self):
+        if isinstance(self.response, requests.Response):
+            return self.response.headers.get('Content-Length')
+        return 0
 
     def _request(self, url, data=None, features=None, is_json=False):
         """
@@ -64,7 +76,7 @@ class Parser:
             self.logger.error(exc.args[0])
             return False
 
-    def insert_record(self, record_data):
+    def insert_record(self, **record_data):
         """
         Создать новую запись в БД. Результат сохранения записывается в словарь-счетчик результатов self.save_results.
         В случае ошибок выбрасывается соответствующее исключение, а текст ошибок (кроме дубликата записи) записывается
@@ -79,10 +91,7 @@ class Parser:
             self.save_results['added'] += 1
         except DuplicateKeyError:
             self.save_results['duplicates'] += 1
-        except RecordSaveError as exc:
-            self.logger.error(f'Insert record error: {exc.args[0]}')
-            self.save_results['other_errors'] += 1
-        except UnknownError as exc:
+        except (RecordSaveError, UnknownError) as exc:
             self.logger.error(f'Insert record error: {exc.args[0]}')
             self.save_results['other_errors'] += 1
 
@@ -121,7 +130,7 @@ class Parser:
 
         :return Boolean: Успешность выполнения запроса к источнику данных
         """
-        return self._request(url=self.URL, data=self.data, features='lxml')
+        return self._request(url=self.URL, data=self.request_data, features='lxml')
 
     def request_html(self):
         """
@@ -130,7 +139,7 @@ class Parser:
         :return Boolean: Успешность выполнения запроса к источнику данных
         """
 
-        return self._request(url=self.URL, data=self.data, features='html.parser')
+        return self._request(url=self.URL, data=self.request_data, features='html.parser')
 
     def request_json(self):
         """
@@ -139,7 +148,7 @@ class Parser:
         :return Boolean: Успешность выполнения запроса к источнику данных
         """
 
-        return self._request(url=self.URL, data=self.data, is_json=True)
+        return self._request(url=self.URL, data=self.request_data, is_json=True)
 
     def clean_html(self):
         """ Метод для предварительной обработки полученных от источника данных (при необходимости) """
@@ -148,3 +157,39 @@ class Parser:
     def parse(self):
         """ Метод непосредственно парсинга (для каждого парсера индивидуален) """
         pass
+
+    def datetime_with_tzone(self, dtime):
+        """
+        Конвертирует наивный экземпляр datetime в в datetime с timezone по умолчанию для класса парсера
+
+        :param datetime dtime: Экземпляр класса datetime
+        :return:
+        """
+        assert isinstance(dtime, datetime)
+        return pytz.timezone(self.DEFAULT_TIME_ZONE).localize(dtime)
+
+    @staticmethod
+    def save_file_from_url(url, path):
+        """
+        Сохраняет файл по его url-ссылке в каталог path. В случае отсутствия каталога, создает его.
+        Возвращет tuple с результатом выполнения операции. Первый элемент - его булевое значение,
+        второй - сообщение об ошибке, в случае не успешного завершения.
+
+        :param str url: url на файл
+        :param path: Путь для сохранения файла
+        :return tuple: Результат сохранения
+        """
+        file_name = url.split('/')[-1]
+        response = requests.get(url=url)
+        try:
+            if response.status_code != 200:
+                response.raise_for_status()
+            image_file_like = BytesIO(response.content)
+            if not pathlib.Path(path).is_dir():
+                pathlib.Path(path).mkdir(parents=True)
+            pathlib.Path(path / file_name).write_bytes(data=image_file_like.getbuffer())
+            return True, ''
+        except Exception as exc:
+            return False, exc.strerror or exc.args[0]
+
+

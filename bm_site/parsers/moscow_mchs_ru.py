@@ -40,13 +40,13 @@ class EmergencyWarningsParser(Parser):
                     record_data['full_text'] = tag.text.strip()
                 elif tag.name == 'pubdate':
                     date = datetime.datetime.strptime(tag.text[:25], '%a, %d %b %Y %H:%M:%S')
-                    record_data['pub_date'] = pytz.timezone('Europe/Moscow').localize(date)
+                    record_data['pub_date'] = self.datetime_with_tzone(dtime=date)
                 elif tag.name == 'enclosure':
                     record_data['enc_link'] = tag.attrs.get('url')
                     record_data['enc_length'] = tag.attrs.get('length')
                     record_data['enc_type'] = tag.attrs.get('type')
             try:
-                self.insert_record(record_data=record_data)
+                self.insert_record(**record_data)
             except DuplicateKeyError:
                 pass
         log_str = 'Parsing completed. Added {} new records, {} skipped due to duplication.\n'

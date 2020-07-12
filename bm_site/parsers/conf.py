@@ -37,6 +37,12 @@ LOG_CONFIG = {
             'filename': os.path.join(PARSERS_LOG_DIR, 'mos.ru.log'),
             'encoding': 'UTF-8'
         },
+        'handler_cached_sites': {
+            'class': 'logging.FileHandler',
+            'formatter': 'parsing_log',
+            'filename': os.path.join(PARSERS_LOG_DIR, 'cached_sites.log'),
+            'encoding': 'UTF-8'
+        },
         # 'handler_errors': {
         #     'class': 'logging.FileHandler',
         #     'formatter': 'request_log',
@@ -60,6 +66,10 @@ LOG_CONFIG = {
         },
         'mos.ru': {
             'handlers': ['handler_mos.ru'],
+            'level': 'INFO',
+        },
+        'cached_sites': {
+            'handlers': ['handler_cached_sites'],
             'level': 'INFO',
         },
         # 'level_critical': {

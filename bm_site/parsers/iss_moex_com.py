@@ -29,7 +29,7 @@ class CurrencyParser(Parser):
                 'rate_date': datetime.datetime.strptime(data.get(f'CBRF_{currency}_TRADEDATE'), '%Y-%m-%d'),
             }
             try:
-                self.insert_record(record_data=record_data)
+                self.insert_record(**record_data)
             except DuplicateKeyError:
                 pass
         self.logger.info(f'Parsing completed. Added {self.save_results["added"]} new records.\n')
