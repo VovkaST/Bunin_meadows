@@ -127,6 +127,7 @@ STATICFILES_DIRS = [
     ('css', STATIC_ROOT / 'css'),
     ('fonts', STATIC_ROOT / 'fonts'),
     ('images', STATIC_ROOT / 'images'),
+    ('js', STATIC_ROOT / 'js'),
     ('newsfeed', NEWSFEED_ROOT),
 ]
 STATIC_URL = '/static/'

@@ -13,6 +13,7 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'fonts/fa/css/all.min.css' %}">
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
 </head>
 <body class="page-body">
 <header class="page-container bg-white shadowed">
@@ -35,7 +36,7 @@
     </div>
     <div class="header__middle-block">
         <div class="logo">
-            <a href="#"><img src="{% static 'images/main-logo.png' %}" alt="Бунинские луга наш людимый микрорайон"></a>
+            <a href="/"><img src="{% static 'images/main-logo.png' %}" alt="Бунинские луга наш людимый микрорайон"></a>
         </div>
         <div class="banner banner__horizontal banner__top size-preview">
             <a href="#" target="_blank" class="banner__link">720 x 90</a>
@@ -97,5 +98,6 @@
 
 {% endblock %}
 <div class="copyright">{% now 'Y' %}, Сунцов Владимир &copy; Все права защищены</div>
+<script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

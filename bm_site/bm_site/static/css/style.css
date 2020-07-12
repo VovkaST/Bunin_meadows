@@ -331,6 +331,7 @@ a:hover {
 .news-list__item__logo {
     height: 137px;
     /*line-height: 0;*/
+    overflow: hidden;
 }
 .news-list__item__logo__image {
     width: 100%;
@@ -346,7 +347,8 @@ a:hover {
     line-height: 1.2em;
 }
 .meta__dislikes,
-.meta__comments {
+.meta__comments,
+.meta__views {
     margin-left: 10px;
 }
 .column__left {
